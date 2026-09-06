@@ -1,0 +1,1781 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BattleZone BD — Free Fire Tournaments</title>
+<meta name="description" content="Join Free Fire virtual-points tournaments. BR, Clash Squad, Lone Wolf and more — track matches, results and your points wallet." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DESIGN TOKENS — BattleZone BD
+   Light lavender bg, white cards, purple/indigo primary, green
+   success. Large rounded corners, soft shadows, minimal gradients.
+   ============================================================ */
+:root {
+  --bg: #f2f0fb;
+  --surface: #ffffff;
+  --surface-alt: #f7f6fd;
+  --border: #e8e5f7;
+
+  --text: #1c1b2e;
+  --text-muted: #6b6b85;
+  --text-faint: #9b9bb3;
+
+  --primary: #6c5ce7;
+  --primary-dark: #5847d1;
+  --primary-tint: #eeebfd;
+  --success: #22c55e;
+  --success-tint: #e8f9ee;
+  --danger: #ef4444;
+  --danger-tint: #fdecec;
+  --amber: #f59e0b;
+  --amber-tint: #fef3e2;
+
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 10px;
+
+  --shadow-card: 0 2px 6px rgba(108, 92, 231, 0.06), 0 10px 24px rgba(108, 92, 231, 0.07);
+  --shadow-float: 0 8px 28px rgba(28, 27, 46, 0.14);
+
+  --font-display: "Manrope", sans-serif;
+  --font-body: "Inter", sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  padding-bottom: 92px; /* space for floating bottom nav */
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
+
+:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+
+.container { max-width: 480px; margin: 0 auto; padding: 0 16px; }
+@media (min-width: 860px) { .container { max-width: 760px; } }
+
+h1, h2, h3, .display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.15;
+}
+h1 { font-size: 1.5rem; }
+h2 { font-size: 1.2rem; }
+h3 { font-size: 1.02rem; }
+
+.text-muted { color: var(--text-muted); }
+.hidden { display: none !important; }
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+.topbar {
+  position: sticky; top: 0; z-index: 30;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px;
+  background: rgba(242, 240, 251, 0.9);
+  backdrop-filter: blur(10px);
+}
+.topbar .logo {
+  font-family: var(--font-display); font-weight: 800; font-size: 1.05rem;
+  display: flex; align-items: center; gap: 8px; color: var(--text);
+}
+.logo .mark {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: var(--primary);
+  display: grid; place-items: center;
+  color: #fff; font-size: 0.85rem; font-weight: 800;
+}
+.topbar .actions { display: flex; gap: 8px; }
+.avatar-btn {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--primary-tint); color: var(--primary-dark);
+  display: grid; place-items: center; font-weight: 700; font-size: 0.85rem;
+  border: none;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 12px 18px; border-radius: 14px;
+  font-size: 0.88rem; font-weight: 700;
+  border: 1px solid transparent;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--primary); color: #fff; }
+.btn-primary:hover { background: var(--primary-dark); }
+.btn-outline { background: var(--surface); border-color: var(--border); color: var(--text); }
+.btn-outline:hover { border-color: var(--primary); }
+.btn-ghost { background: transparent; color: var(--text-muted); }
+.btn-sm { padding: 8px 14px; font-size: 0.8rem; border-radius: 12px; }
+.btn-xs { padding: 6px 10px; font-size: 0.74rem; border-radius: 10px; }
+.btn-block { width: 100%; }
+.btn-danger { background: var(--danger-tint); color: var(--danger); }
+.btn[disabled] { opacity: 0.6; pointer-events: none; }
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 18px;
+}
+.card-sm { border-radius: var(--radius-md); padding: 14px; }
+
+/* ============================================================
+   BOTTOM NAV
+   ============================================================ */
+.bottom-nav-wrap {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  display: flex; justify-content: center;
+  padding: 0 14px 14px;
+  pointer-events: none;
+}
+.bottom-nav {
+  pointer-events: auto;
+  background: var(--surface);
+  border-radius: 22px;
+  box-shadow: var(--shadow-float);
+  display: flex;
+  padding: 6px;
+  gap: 2px;
+  width: 100%;
+  max-width: 440px;
+}
+.bottom-nav a {
+  flex: 1;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 9px 4px;
+  border-radius: 16px;
+  color: var(--text-faint);
+  font-size: 0.66rem; font-weight: 600;
+}
+.bottom-nav a svg { width: 20px; height: 20px; }
+.bottom-nav a.active { background: var(--primary-tint); color: var(--primary-dark); }
+
+/* ============================================================
+   HOME
+   ============================================================ */
+.welcome-card {
+  background: linear-gradient(135deg, var(--primary), #8b7bf0);
+  color: #fff;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  margin: 14px 0 20px;
+}
+.welcome-card h3 { color: #fff; margin-bottom: 4px; }
+.welcome-card p { font-size: 0.85rem; opacity: 0.9; margin-bottom: 14px; }
+.welcome-card .btn-outline { background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.3); color: #fff; }
+
+.section-head { margin: 22px 0 12px; }
+.section-head p { color: var(--text-muted); font-size: 0.85rem; margin-top: 2px; }
+
+/* Banner carousel */
+.carousel { position: relative; border-radius: var(--radius-lg); overflow: hidden; }
+.carousel-track {
+  display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+  scrollbar-width: none; border-radius: var(--radius-lg);
+}
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-slide {
+  flex: 0 0 100%; scroll-snap-align: start;
+  height: 140px;
+  background: linear-gradient(135deg, var(--primary), #a292fb);
+  display: flex; align-items: flex-end;
+  padding: 16px; color: #fff; font-weight: 700; font-family: var(--font-display);
+}
+.carousel-dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+.carousel-dots span { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+.carousel-dots span.active { background: var(--primary); width: 16px; border-radius: 4px; }
+
+/* Categories */
+.category-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+}
+.category-card {
+  background: var(--surface); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 8px;
+  border: 1px solid transparent;
+}
+.category-card:hover, .category-card:active { border-color: var(--primary); }
+.category-card .thumb {
+  height: 64px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary-tint), #ded7fb);
+  display: grid; place-items: center;
+  color: var(--primary-dark); font-weight: 800; font-size: 0.75rem;
+}
+.category-card .name { font-weight: 700; font-size: 0.86rem; }
+
+/* ============================================================
+   MATCH CARD
+   ============================================================ */
+.match-list { display: flex; flex-direction: column; gap: 14px; }
+.match-card {
+  background: var(--surface); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card); overflow: hidden;
+}
+.match-card .banner {
+  height: 100px; position: relative;
+  background: linear-gradient(135deg, var(--primary), #a292fb);
+}
+.match-card .banner .status-badge { position: absolute; top: 12px; left: 12px; }
+.match-card .banner .match-id {
+  position: absolute; top: 12px; right: 12px;
+  font-size: 0.7rem; color: #fff; background: rgba(0,0,0,0.25);
+  padding: 3px 9px; border-radius: 999px; font-weight: 600;
+}
+.match-card .body { padding: 14px 16px 16px; }
+.match-card h4 { font-size: 0.96rem; margin-bottom: 6px; }
+.match-meta { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; color: var(--text-muted); font-size: 0.76rem; margin-bottom: 12px; }
+.match-meta .sep { color: var(--text-faint); }
+.match-meta svg { width: 13px; height: 13px; }
+
+.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
+.stats-row .stat-box {
+  background: var(--surface-alt); border-radius: 12px; padding: 8px 10px; text-align: center;
+}
+.stats-row .stat-box .val { font-weight: 800; font-size: 0.92rem; }
+.stats-row .stat-box .lbl { font-size: 0.66rem; color: var(--text-muted); margin-top: 2px; }
+
+.capacity-bar { height: 6px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: 4px; }
+.capacity-bar .fill { height: 100%; background: var(--success); }
+.capacity-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 12px; }
+
+.countdown-row {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  font-size: 0.76rem; color: var(--text); font-weight: 700;
+  background: var(--surface-alt); padding: 9px 12px; border-radius: 10px;
+  margin-bottom: 12px;
+}
+.countdown-row .date-part, .countdown-row .time-part { display: flex; align-items: center; gap: 6px; }
+.countdown-row .date-part { color: var(--text-muted); font-weight: 500; }
+.countdown-row .time-part { color: var(--primary-dark); }
+.countdown-row svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+.match-actions { display: flex; gap: 8px; }
+.match-actions .btn { flex: 1; }
+.action-slot { flex: 1; display: flex; }
+.action-slot .btn { flex: 1; }
+.room-code-box { flex: 1; background: #ecfdf5; border: 1px solid #34d399; border-radius: 10px; padding: 8px 10px; text-align: center; }
+.room-code-box .room-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; }
+.room-code-box .lbl { color: #047857; font-weight: 600; }
+.room-code-box .val { font-weight: 800; color: #065f46; letter-spacing: 0.04em; font-size: 0.95rem; }
+.room-code-box .room-timer { margin-top: 4px; font-size: 0.72rem; color: #047857; font-weight: 700; }
+.room-pending { flex: 1; background: var(--border); border-radius: 10px; padding: 8px 10px; font-size: 0.78rem; color: var(--text-muted); text-align: center; display: flex; align-items: center; justify-content: center; }
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; font-size: 0.68rem; font-weight: 700; }
+.badge-upcoming { background: var(--success-tint); color: var(--success); }
+.badge-live { background: var(--danger-tint); color: var(--danger); }
+.badge-completed { background: var(--surface-alt); color: var(--text-muted); }
+.badge-cancelled { background: var(--surface-alt); color: var(--text-faint); }
+.badge-draft { background: var(--surface-alt); color: var(--text-faint); }
+.badge::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+/* ============================================================
+   VIEW HEADER (matches/results)
+   ============================================================ */
+.view-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 10px 0 14px; gap: 10px;
+}
+.view-header .left { display: flex; align-items: center; gap: 10px; }
+.icon-btn {
+  width: 36px; height: 36px; border-radius: 12px;
+  background: var(--surface); border: 1px solid var(--border);
+  display: grid; place-items: center; color: var(--text-muted);
+}
+
+.search-box {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+  padding: 10px 14px; margin-bottom: 14px;
+}
+.search-box input { flex: 1; border: none; outline: none; background: transparent; font-size: 0.88rem; color: var(--text); }
+
+.chip-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 14px; scrollbar-width: none; }
+.chip-row::-webkit-scrollbar { display: none; }
+.chip {
+  flex-shrink: 0; padding: 8px 14px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--border);
+  font-size: 0.78rem; font-weight: 600; color: var(--text-muted);
+}
+.chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+.tabs-row { display: flex; gap: 4px; background: var(--surface-alt); padding: 4px; border-radius: 14px; margin-bottom: 14px; }
+.tabs-row button { flex: 1; padding: 9px; border: none; background: transparent; border-radius: 11px; font-size: 0.82rem; font-weight: 700; color: var(--text-muted); }
+.tabs-row button.active { background: var(--surface); color: var(--primary-dark); box-shadow: var(--shadow-card); }
+
+/* ============================================================
+   STATES
+   ============================================================ */
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-alt) 25%, #ece9f9 37%, var(--surface-alt) 63%);
+  background-size: 400% 100%; animation: shimmer 1.4s infinite;
+  border-radius: var(--radius-md);
+}
+@keyframes shimmer { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+.skeleton-card { height: 200px; }
+
+.state-box {
+  text-align: center; padding: 40px 20px; color: var(--text-muted);
+  background: var(--surface); border-radius: var(--radius-lg);
+}
+.state-box h4 { color: var(--text); margin-bottom: 6px; font-family: var(--font-display); font-size: 0.98rem; }
+.state-box.error h4 { color: var(--danger); }
+
+/* ============================================================
+   AUTH VIEWS
+   ============================================================ */
+.auth-view { padding: 30px 0 20px; }
+.auth-view h1 { text-align: center; margin-bottom: 4px; }
+.auth-view p.sub { text-align: center; color: var(--text-muted); font-size: 0.88rem; margin-bottom: 26px; }
+.auth-error {
+  background: var(--danger-tint); color: var(--danger); font-size: 0.82rem;
+  padding: 10px 12px; border-radius: 12px; margin-bottom: 16px; display: none;
+}
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; }
+.field input, .field select, .field textarea {
+  width: 100%; background: var(--surface); border: 1px solid var(--border);
+  padding: 12px 14px; border-radius: 12px; font-size: 0.9rem; color: var(--text);
+}
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--primary); outline: none; }
+.field .hint { font-size: 0.72rem; color: var(--text-faint); margin-top: 5px; }
+.password-wrap { position: relative; }
+.password-wrap input { padding-right: 42px; }
+.eye-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-faint); font-size: 0.75rem; font-weight: 700; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.auth-footer-link { text-align: center; margin-top: 18px; font-size: 0.85rem; color: var(--text-muted); }
+.auth-footer-link a, .auth-footer-link button { color: var(--primary); font-weight: 700; background: none; border: none; }
+.forgot-link { display: block; text-align: right; font-size: 0.78rem; color: var(--primary); font-weight: 600; margin: -6px 0 16px; background: none; border: none; }
+
+/* ============================================================
+   WALLET
+   ============================================================ */
+.balance-card {
+  background: linear-gradient(135deg, var(--primary), #8b7bf0);
+  color: #fff; border-radius: var(--radius-lg); padding: 22px;
+  margin: 14px 0 20px;
+}
+.balance-card .top-row { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.balance-card .icon-circle {
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(255,255,255,0.16); display: grid; place-items: center; flex-shrink: 0;
+}
+.balance-card .icon-circle svg { width: 22px; height: 22px; }
+.balance-card .lbl { font-size: 0.72rem; opacity: 0.8; letter-spacing: 0.04em; margin-bottom: 2px; }
+.balance-card .val { font-family: var(--font-display); font-size: 1.7rem; font-weight: 800; }
+.balance-card hr { border: none; border-top: 1px solid rgba(255,255,255,0.2); margin-bottom: 16px; }
+.balance-card .btn-row { display: flex; gap: 10px; }
+.balance-card .btn-outline { flex: 1; background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.24); color: #fff; }
+
+.tx-list { display: flex; flex-direction: column; gap: 10px; }
+.tx-row { background: var(--surface); border-radius: var(--radius-md); padding: 13px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.tx-row .desc { font-size: 0.85rem; font-weight: 600; }
+.tx-row .meta { font-size: 0.72rem; color: var(--text-faint); margin-top: 2px; }
+.tx-row .amt { font-weight: 800; font-size: 0.9rem; }
+.tx-row .amt.pos { color: var(--success); }
+.tx-row .amt.neg { color: var(--danger); }
+
+.amount-chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+.amount-chip { padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border); background: var(--surface); font-weight: 700; font-size: 0.85rem; }
+.amount-chip.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+/* ============================================================
+   PROFILE
+   ============================================================ */
+.profile-cover {
+  height: 90px; border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: linear-gradient(135deg, var(--primary), #a292fb);
+  position: relative; margin-top: 8px;
+}
+.profile-card { background: var(--surface); border-radius: 0 0 var(--radius-lg) var(--radius-lg); box-shadow: var(--shadow-card); padding: 0 18px 20px; margin-bottom: 20px; }
+.profile-avatar-wrap { display: flex; justify-content: center; margin-top: -38px; margin-bottom: 10px; }
+.profile-avatar {
+  width: 76px; height: 76px; border-radius: 50%; background: var(--primary-tint);
+  border: 4px solid var(--surface); color: var(--primary-dark);
+  display: grid; place-items: center; font-weight: 800; font-size: 1.4rem;
+}
+.profile-info { text-align: center; margin-bottom: 16px; }
+.profile-info .name { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; }
+.profile-info .username { color: var(--primary); font-size: 0.85rem; font-weight: 600; }
+.profile-info .email { color: var(--text-muted); font-size: 0.8rem; margin-top: 2px; }
+.profile-btn-row { display: flex; gap: 10px; }
+
+.stat-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 18px 0; }
+.stat-grid-3 .stat-tile { background: var(--surface); border-radius: var(--radius-md); padding: 14px 8px; text-align: center; box-shadow: var(--shadow-card); }
+.stat-grid-3 .stat-tile .num { font-family: var(--font-display); font-weight: 800; font-size: 1.1rem; }
+.stat-grid-3 .stat-tile .lbl { font-size: 0.68rem; color: var(--text-muted); margin-top: 2px; }
+
+.menu-list { background: var(--surface); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); overflow: hidden; }
+.menu-list button, .menu-list a {
+  width: 100%; display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px; border: none; background: none; text-align: left;
+  font-size: 0.88rem; font-weight: 600; color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+.menu-list button:last-child, .menu-list a:last-child { border-bottom: none; }
+.menu-list button.danger { color: var(--danger); }
+
+/* ============================================================
+   RESULTS
+   ============================================================ */
+.result-card { background: var(--surface); border-radius: var(--radius-md); padding: 14px 16px; box-shadow: var(--shadow-card); display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+.result-card .title { font-weight: 700; font-size: 0.88rem; }
+.result-card .meta { font-size: 0.74rem; color: var(--text-muted); margin-top: 3px; }
+.result-card .pos { font-weight: 800; color: var(--primary); font-size: 0.95rem; }
+
+/* ============================================================
+   MODALS / TOAST
+   ============================================================ */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(28,27,46,0.45);
+  display: none; align-items: flex-end; justify-content: center; z-index: 80;
+}
+.modal-backdrop.open { display: flex; }
+.modal {
+  background: var(--surface); border-radius: 24px 24px 0 0;
+  padding: 22px 20px 26px; width: 100%; max-width: 480px;
+  max-height: 88vh; overflow-y: auto;
+}
+@media (min-width: 640px) {
+  .modal-backdrop { align-items: center; }
+  .modal { border-radius: 24px; }
+}
+.modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+.modal-close { background: var(--surface-alt); border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 1.1rem; color: var(--text-muted); }
+
+.toast-stack { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 100; display: flex; flex-direction: column; gap: 8px; width: calc(100% - 32px); max-width: 420px; }
+.toast {
+  background: var(--text); color: #fff; padding: 12px 16px; border-radius: 14px;
+  font-size: 0.84rem; font-weight: 600; box-shadow: var(--shadow-float);
+  animation: toast-in 0.2s ease;
+}
+.toast.success { background: var(--success); }
+.toast.error { background: var(--danger); }
+@keyframes toast-in { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+.prize-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: var(--surface-alt); border-radius: 12px; margin-bottom: 8px; }
+.prize-row .place { font-weight: 700; font-size: 0.86rem; }
+.prize-row .pts { font-weight: 800; color: var(--primary-dark); }
+
+.confirm-box p { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 20px; }
+.confirm-actions { display: flex; gap: 10px; }
+.confirm-actions .btn { flex: 1; }
+
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="logo"><span class="mark">BZ</span> BattleZone BD</div>
+  <div class="actions" id="headerActions">
+    <a href="#" class="btn btn-outline btn-sm" data-nav="login">Login</a>
+    <a href="#" class="btn btn-primary btn-sm" data-nav="register">Register</a>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- ===================== HOME VIEW ===================== -->
+  <section id="view-home">
+    <div class="welcome-card" id="welcomeCard">
+      <h3>Welcome to BattleZone BD!</h3>
+      <p>Login or Register to join matches.</p>
+      <a href="#" class="btn btn-outline btn-sm" data-nav="register">Get started</a>
+    </div>
+
+    <div class="carousel" id="bannerSection">
+      <div class="carousel-track" id="bannerTrack"></div>
+    </div>
+    <div class="carousel-dots" id="bannerDots"></div>
+
+    <div class="section-head">
+      <h2>Tournaments</h2>
+      <p>Browse available categories</p>
+    </div>
+    <div class="category-grid" id="categoryGrid">
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+
+    <div class="section-head">
+      <h2>Upcoming matches</h2>
+      <p>Latest open tournaments</p>
+    </div>
+    <div class="match-list" id="homeMatchList">
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+  </section>
+
+  <!-- ===================== MATCHES VIEW ===================== -->
+  <section id="view-matches" class="hidden">
+    <div class="view-header">
+      <div class="left">
+        <button class="icon-btn" data-nav="home" aria-label="Back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div><h2>Matches</h2><p class="text-muted" id="matchCountLabel" style="font-size:0.78rem;">Loading…</p></div>
+      </div>
+      <button class="icon-btn" id="refreshMatchesBtn" aria-label="Refresh">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      </button>
+    </div>
+
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="matchSearchInput" placeholder="Search matches…" />
+    </div>
+
+    <div class="chip-row" id="categoryChipRow">
+      <button class="chip active" data-cat="">All</button>
+    </div>
+
+    <div class="match-list" id="matchesList">
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+      <div class="skeleton skeleton-card"></div>
+    </div>
+  </section>
+
+  <!-- ===================== RESULTS VIEW ===================== -->
+  <section id="view-results" class="hidden">
+    <div class="view-header">
+      <h2>Results</h2>
+      <button class="icon-btn" id="refreshResultsBtn" aria-label="Refresh">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+      </button>
+    </div>
+    <div class="tabs-row">
+      <button class="active" id="tabMyMatches">My Matches</button>
+      <button id="tabAllMatches">All Matches</button>
+    </div>
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <input type="text" id="resultSearchInput" placeholder="Search by Match ID or title..." />
+    </div>
+    <div id="resultsList">
+      <div class="skeleton skeleton-card" style="height:70px;"></div>
+      <div class="skeleton skeleton-card" style="height:70px; margin-top:10px;"></div>
+    </div>
+  </section>
+
+  <!-- ===================== WALLET VIEW ===================== -->
+  <section id="view-wallet" class="hidden">
+    <div class="view-header"><h2>Wallet</h2></div>
+    <div class="balance-card">
+      <div class="top-row">
+        <div class="icon-circle"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20M17 15h.01"/></svg></div>
+        <div><div class="lbl">TOTAL BALANCE</div><div class="val" id="walletBalance">0 Points</div></div>
+      </div>
+      <hr>
+      <div class="btn-row">
+        <button class="btn btn-outline" id="depositPointsBtn">Deposit</button>
+        <button class="btn btn-outline" id="redeemPointsBtn">Withdraw</button>
+        <button class="btn btn-outline" id="shareAppBtn">Share App</button>
+      </div>
+    </div>
+    <div class="section-head"><h2>Transaction history</h2></div>
+    <div class="tx-list" id="txList">
+      <div class="skeleton skeleton-card" style="height:56px;"></div>
+      <div class="skeleton skeleton-card" style="height:56px;"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PROFILE VIEW ===================== -->
+  <section id="view-profile" class="hidden">
+    <div class="profile-cover"></div>
+    <div class="profile-card">
+      <div class="profile-avatar-wrap"><div class="profile-avatar" id="profileAvatar">?</div></div>
+      <div class="profile-info">
+        <div class="name" id="profileName">—</div>
+        <div class="username" id="profileUsername">@—</div>
+        <div class="email" id="profileEmail">—</div>
+      </div>
+      <div class="profile-btn-row">
+        <button class="btn btn-outline btn-block btn-sm" id="editProfileBtn">Edit Info</button>
+        <button class="btn btn-outline btn-block btn-sm" id="changePasswordBtn">Change Password</button>
+      </div>
+    </div>
+
+    <div class="stat-grid-3">
+      <div class="stat-tile"><div class="num" id="statMatches">0</div><div class="lbl">Matches</div></div>
+      <div class="stat-tile"><div class="num" id="statWins">0</div><div class="lbl">Wins</div></div>
+      <div class="stat-tile"><div class="num" id="statPoints">0</div><div class="lbl">Points</div></div>
+    </div>
+
+    <div class="menu-list">
+      <button data-toast="AI Support is coming soon.">AI Support</button>
+      <button data-toast="Community chat link isn't configured yet.">Community Chat</button>
+      <button data-toast="Leaderboard is coming soon.">Top Players</button>
+      <button data-toast="Rules are managed by admins — check back soon.">Rules</button>
+      <button data-toast="Contact support: support@battlezonebd.example">Contact Support</button>
+      <button data-toast="BattleZone BD — virtual-points Free Fire tournament platform.">About</button>
+      <button class="danger" id="logoutBtn">Log out</button>
+    </div>
+  </section>
+
+  <!-- ===================== LOGIN VIEW ===================== -->
+  <section id="view-login" class="hidden auth-view">
+    <h1>Welcome Back!</h1>
+    <p class="sub">Sign in to your account</p>
+    <div class="auth-error" id="loginError"></div>
+    <form id="loginForm">
+      <div class="field">
+        <label for="li_id">Username or Email</label>
+        <input id="li_id" required autocomplete="username" />
+      </div>
+      <div class="field">
+        <label for="li_password">Password</label>
+        <div class="password-wrap">
+          <input id="li_password" type="password" required autocomplete="current-password" />
+          <button type="button" class="eye-btn" data-toggle-eye="li_password">SHOW</button>
+        </div>
+      </div>
+      <button type="button" class="forgot-link" id="forgotPasswordBtn">Forgot Password?</button>
+      <button type="submit" class="btn btn-primary btn-block" id="loginBtn">Log in</button>
+    </form>
+    <div class="auth-footer-link">Don't have an account? <button data-nav="register">Register</button></div>
+  </section>
+
+  <!-- ===================== REGISTER VIEW ===================== -->
+  <section id="view-register" class="hidden auth-view">
+    <h1>Create Account</h1>
+    <p class="sub">Join the tournament community</p>
+    <div class="auth-error" id="registerError"></div>
+    <form id="registerForm">
+      <div class="field-row">
+        <div class="field"><label for="reg_first">First Name</label><input id="reg_first" required /></div>
+        <div class="field"><label for="reg_last">Last Name</label><input id="reg_last" required /></div>
+      </div>
+      <div class="field">
+        <label for="reg_username">Username</label>
+        <input id="reg_username" required pattern="[A-Za-z0-9_]+" />
+        <div class="hint">Letters, numbers, and underscores only</div>
+      </div>
+      <div class="field"><label for="reg_email">Email</label><input id="reg_email" type="email" required /></div>
+      <div class="field">
+        <label for="reg_password">Password</label>
+        <div class="password-wrap">
+          <input id="reg_password" type="password" minlength="6" required autocomplete="new-password" />
+          <button type="button" class="eye-btn" data-toggle-eye="reg_password">SHOW</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="reg_password2">Confirm Password</label>
+        <div class="password-wrap">
+          <input id="reg_password2" type="password" minlength="6" required autocomplete="new-password" />
+          <button type="button" class="eye-btn" data-toggle-eye="reg_password2">SHOW</button>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block" id="registerBtn">Create account</button>
+    </form>
+    <div class="auth-footer-link">Already have an account? <button data-nav="login">Log in</button></div>
+  </section>
+
+</main>
+
+<!-- ===================== BOTTOM NAV ===================== -->
+<div class="bottom-nav-wrap">
+  <nav class="bottom-nav" id="bottomNav"></nav>
+</div>
+
+<!-- ===================== PRIZE MODAL ===================== -->
+<div class="modal-backdrop" id="prizeModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Prize Distribution</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <div id="prizeContent"></div>
+  </div>
+</div>
+
+<!-- ===================== JOIN CONFIRM MODAL ===================== -->
+<div class="modal-backdrop" id="joinModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Join match?</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <div class="confirm-box">
+      <p id="joinModalText">Confirm your entry.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline btn-block" data-close-modal>Cancel</button>
+        <button class="btn btn-primary btn-block" id="confirmJoinBtn">Join Now</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== REDEEM MODAL ===================== -->
+<div class="modal-backdrop" id="redeemModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Withdrawal Request</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <form id="redeemForm">
+      <div class="field"><label for="rd_amount">Points amount</label><input id="rd_amount" type="number" min="1" required /></div>
+      <div class="field">
+        <label for="rd_method">Payment method</label>
+        <select id="rd_method"><option>bKash</option><option>Nagad</option><option>Rocket</option><option>Bank Transfer</option></select>
+      </div>
+      <div class="field"><label for="rd_account">Account / wallet number</label><input id="rd_account" required placeholder="01XXXXXXXXX" /></div>
+      <div class="field"><label for="rd_note">Note (optional)</label><textarea id="rd_note" rows="2"></textarea></div>
+      <p class="text-muted" style="font-size:0.78rem; margin-bottom:14px;">Points are held once you submit. An admin reviews and sends payment manually to the number above, then approves the request.</p>
+      <button type="submit" class="btn btn-primary btn-block">Submit request</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== DEPOSIT MODAL ===================== -->
+<div class="modal-backdrop" id="depositModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Deposit Request</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <p class="text-muted" id="depositInstructions" style="font-size:0.82rem; margin-bottom:14px;">Send payment to the number shown by admin, then fill in the details below.</p>
+    <form id="depositForm">
+      <div class="field"><label for="dp_amount">Points amount</label><input id="dp_amount" type="number" min="1" required /></div>
+      <div class="field">
+        <label for="dp_method">Payment method</label>
+        <select id="dp_method"><option>bKash</option><option>Nagad</option><option>Rocket</option><option>Bank Transfer</option></select>
+      </div>
+      <div class="field"><label for="dp_sender">Your sender number</label><input id="dp_sender" required placeholder="01XXXXXXXXX" /></div>
+      <div class="field"><label for="dp_txid">Transaction ID</label><input id="dp_txid" required placeholder="e.g. 8N7A3XYZQ1" /></div>
+      <div class="field"><label for="dp_note">Note (optional)</label><textarea id="dp_note" rows="2"></textarea></div>
+      <p class="text-muted" style="font-size:0.78rem; margin-bottom:14px;">Points are added only after an admin verifies your payment. This is not instant.</p>
+      <button type="submit" class="btn btn-primary btn-block">Submit request</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== EDIT PROFILE MODAL ===================== -->
+<div class="modal-backdrop" id="editProfileModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Edit Info</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <form id="editProfileForm">
+      <div class="field-row">
+        <div class="field"><label for="ep_first">First Name</label><input id="ep_first" required /></div>
+        <div class="field"><label for="ep_last">Last Name</label><input id="ep_last" required /></div>
+      </div>
+      <div class="field"><label for="ep_username">Username</label><input id="ep_username" required pattern="[A-Za-z0-9_]+" /></div>
+      <button type="submit" class="btn btn-primary btn-block">Save changes</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== CHANGE PASSWORD MODAL ===================== -->
+<div class="modal-backdrop" id="changePasswordModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Change Password</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <div class="auth-error" id="cpError"></div>
+    <form id="changePasswordForm">
+      <div class="field"><label for="cp_current">Current password</label><input id="cp_current" type="password" required /></div>
+      <div class="field"><label for="cp_new">New password</label><input id="cp_new" type="password" minlength="6" required /></div>
+      <div class="field"><label for="cp_confirm">Confirm new password</label><input id="cp_confirm" type="password" minlength="6" required /></div>
+      <button type="submit" class="btn btn-primary btn-block">Update password</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== LOGOUT CONFIRM MODAL ===================== -->
+<div class="modal-backdrop" id="logoutConfirmModal">
+  <div class="modal">
+    <div class="modal-head"><h3>Log out?</h3><button class="modal-close" data-close-modal>&times;</button></div>
+    <div class="confirm-box">
+      <p>You'll need to log in again to join matches.</p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline btn-block" data-close-modal>Cancel</button>
+        <button class="btn btn-danger btn-block" id="confirmLogoutBtn">Log out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toastStack"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  sendPasswordResetEmail,
+  signOut,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDoc,
+  setDoc,
+  getDocs,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
+  limit,
+  serverTimestamp,
+  runTransaction,
+  increment,
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBHYKzo-QSRLlg6VYmyiEY_ybr2Sa-HHSM",
+  authDomain: "battlezonebd-baf31.firebaseapp.com",
+  projectId: "battlezonebd-baf31",
+  storageBucket: "battlezonebd-baf31.firebasestorage.app",
+  messagingSenderId: "233440672680",
+  appId: "1:233440672680:web:382623a54ef973be2f7b9d",
+  measurementId: "G-2Q5H31VD1K",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+
+
+
+/* ================= main.js ================= */
+
+
+const $ = (id) => document.getElementById(id);
+
+/* ============================================================
+   TOAST
+   ============================================================ */
+function toast(msg, type = "success") {
+  const stack = $("toastStack");
+  const t = document.createElement("div");
+  t.className = `toast ${type}`;
+  t.textContent = msg;
+  stack.appendChild(t);
+  setTimeout(() => t.remove(), 3200);
+}
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+document.querySelectorAll("[data-close-modal]").forEach((btn) => {
+  btn.addEventListener("click", () => btn.closest(".modal-backdrop").classList.remove("open"));
+});
+function openModal(id) { $(id).classList.add("open"); }
+function closeModal(id) { $(id).classList.remove("open"); }
+
+document.querySelectorAll("[data-toggle-eye]").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const input = $(btn.dataset.toggleEye);
+    const isPw = input.type === "password";
+    input.type = isPw ? "text" : "password";
+    btn.textContent = isPw ? "HIDE" : "SHOW";
+  });
+});
+
+document.querySelectorAll("[data-toast]").forEach((btn) => {
+  btn.addEventListener("click", () => toast(btn.dataset.toast, "success"));
+});
+
+/* ============================================================
+   VIEW / NAV
+   ============================================================ */
+const VIEWS = ["home", "matches", "results", "wallet", "profile", "login", "register"];
+const PUBLIC_NAV = [
+  { view: "home", label: "Home", icon: iconHome },
+  { view: "login", label: "Login", icon: iconLogin },
+  { view: "register", label: "Register", icon: iconRegister },
+  { view: "results", label: "Results", icon: iconResults },
+];
+const AUTH_NAV = [
+  { view: "home", label: "Home", icon: iconHome },
+  { view: "matches", label: "Matches", icon: iconMatches },
+  { view: "wallet", label: "Wallet", icon: iconWallet },
+  { view: "results", label: "Results", icon: iconResults },
+  { view: "profile", label: "Profile", icon: iconProfile },
+];
+
+function iconHome() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>`; }
+function iconLogin() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>`; }
+function iconRegister() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 014-4h6a4 4 0 014 4v2"/><path d="M19 8v6M22 11h-6"/></svg>`; }
+function iconMatches() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M8 15h3"/></svg>`; }
+function iconWallet() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="14" rx="2"/><path d="M2 10h20M17 15h.01"/></svg>`; }
+function iconResults() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.9 6.3L21 9l-4.5 4.6L17.8 21 12 17.8 6.2 21l1.3-7.4L3 9l6.1-.7z"/></svg>`; }
+function iconProfile() { return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>`; }
+
+function renderBottomNav(isAuthed) {
+  const items = isAuthed ? AUTH_NAV : PUBLIC_NAV;
+  $("bottomNav").innerHTML = items.map((it) => `
+    <a href="#" data-nav="${it.view}">${it.icon()}<span>${it.label}</span></a>
+  `).join("");
+  attachNavHandlers();
+  highlightNav(currentView);
+}
+
+function highlightNav(view) {
+  document.querySelectorAll("#bottomNav a").forEach((a) => a.classList.toggle("active", a.dataset.nav === view));
+}
+
+let currentView = "home";
+
+function goToView(view) {
+  if (!VIEWS.includes(view)) return;
+  currentView = view;
+  VIEWS.forEach((v) => $(`view-${v}`)?.classList.toggle("hidden", v !== view));
+  highlightNav(view);
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  if (view === "matches" && !matchesLoaded) loadMatches();
+  if (view === "results") loadResults();
+  if (view === "wallet") loadWallet();
+  if (view === "profile") loadProfile();
+}
+
+function attachNavHandlers() {
+  document.querySelectorAll("[data-nav]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      const view = el.dataset.nav;
+      if (["matches", "wallet", "profile"].includes(view) && !auth.currentUser) {
+        toast("Please log in first.", "error");
+        goToView("login");
+        return;
+      }
+      goToView(view);
+    });
+  });
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+function escapeHtml(s) {
+  return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function fmtDate(ts) {
+  if (!ts) return "TBA";
+  const d = ts.toDate ? ts.toDate() : new Date(ts);
+  return d.toLocaleString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+}
+function badgeClass(status) {
+  switch (status) {
+    case "Upcoming": return "badge-upcoming";
+    case "Live": return "badge-live";
+    case "Completed": return "badge-completed";
+    case "Cancelled": return "badge-cancelled";
+    default: return "badge-draft";
+  }
+}
+function emptyState(title, hint) { return `<div class="state-box"><h4>${title}</h4><p>${hint}</p></div>`; }
+function errorState() { return `<div class="state-box error"><h4>Couldn't load data</h4><p>Check your connection and try again.</p></div>`; }
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+function friendlyAuthError(code) {
+  switch (code) {
+    case "auth/email-already-in-use": return "This email is already registered.";
+    case "auth/invalid-credential":
+    case "auth/wrong-password":
+    case "auth/user-not-found": return "Invalid username or password";
+    case "auth/weak-password": return "Password should be at least 6 characters.";
+    case "auth/too-many-requests": return "Too many attempts. Try again later.";
+    case "auth/network-request-failed": return "Network error. Check your connection.";
+    case "permission-denied": return "Server permission error — Firestore security rules are blocking this. Check your Firestore rules in the Firebase console.";
+    case "auth/operation-not-allowed": return "Email/Password sign-in isn't enabled for this project. Enable it in Firebase Console → Authentication → Sign-in method.";
+    default: return "Something went wrong. Please try again.";
+  }
+}
+
+let userProfile = null; // cached Firestore users/{uid} doc data
+
+onAuthStateChanged(auth, async (user) => {
+  renderBottomNav(!!user);
+  renderHeader(user);
+  if (user) {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    userProfile = snap.exists() ? snap.data() : null;
+    $("welcomeCard").classList.add("hidden");
+    if (currentView === "login" || currentView === "register") goToView("home");
+  } else {
+    userProfile = null;
+    $("welcomeCard").classList.remove("hidden");
+    if (["matches", "wallet", "profile"].includes(currentView)) goToView("home");
+  }
+});
+
+function renderHeader(user) {
+  const el = $("headerActions");
+  if (user) {
+    const initial = (user.displayName || "P").charAt(0).toUpperCase();
+    el.innerHTML = `<button class="avatar-btn" id="headerAvatarBtn">${initial}</button>`;
+    $("headerAvatarBtn").addEventListener("click", () => goToView("profile"));
+  } else {
+    el.innerHTML = `
+      <a href="#" class="btn btn-outline btn-sm" data-nav="login">Login</a>
+      <a href="#" class="btn btn-primary btn-sm" data-nav="register">Register</a>`;
+    attachNavHandlers();
+  }
+}
+
+/* ---- Login ---- */
+$("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const err = $("loginError");
+  err.style.display = "none";
+  const idVal = $("li_id").value.trim();
+  const password = $("li_password").value;
+  const btn = $("loginBtn");
+  btn.disabled = true; btn.textContent = "Logging in…";
+  try {
+    let email = idVal;
+    if (!idVal.includes("@")) {
+      const uSnap = await getDoc(doc(db, "usernames", idVal.toLowerCase()));
+      if (!uSnap.exists()) throw { code: "auth/user-not-found" };
+      email = uSnap.data().email;
+    }
+    await signInWithEmailAndPassword(auth, email, password);
+    $("loginForm").reset();
+    toast("Logged in.");
+    goToView("home");
+  } catch (e2) {
+    console.error(e2);
+    err.textContent = friendlyAuthError(e2.code);
+    err.style.display = "block";
+  } finally {
+    btn.disabled = false; btn.textContent = "Log in";
+  }
+});
+
+$("forgotPasswordBtn").addEventListener("click", async () => {
+  const idVal = $("li_id").value.trim();
+  if (!idVal.includes("@")) { toast("Enter your email above to reset password.", "error"); return; }
+  try {
+    await sendPasswordResetEmail(auth, idVal);
+    toast("Password reset email sent.");
+  } catch (err) {
+    console.error(err);
+    toast("Couldn't send reset email.", "error");
+  }
+});
+
+/* ---- Register ---- */
+$("registerForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const err = $("registerError");
+  err.style.display = "none";
+  const first = $("reg_first").value.trim();
+  const last = $("reg_last").value.trim();
+  const username = $("reg_username").value.trim();
+  const email = $("reg_email").value.trim();
+  const password = $("reg_password").value;
+  const password2 = $("reg_password2").value;
+  const btn = $("registerBtn");
+
+  if (!/^[A-Za-z0-9_]+$/.test(username)) { err.textContent = "Username can only contain letters, numbers, and underscores."; err.style.display = "block"; return; }
+  if (password !== password2) { err.textContent = "Passwords don't match."; err.style.display = "block"; return; }
+
+  btn.disabled = true; btn.textContent = "Creating account…";
+  try {
+    const usernameKey = username.toLowerCase();
+    const existing = await getDoc(doc(db, "usernames", usernameKey));
+    if (existing.exists()) throw { code: "custom/username-taken" };
+
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await updateProfile(cred.user, { displayName: `${first} ${last}`.trim() });
+
+    let signupBonus = 0;
+    try {
+      const settingsSnap = await getDoc(doc(db, "settings", "general"));
+      if (settingsSnap.exists()) signupBonus = Number(settingsSnap.data().signupBonus) || 0;
+    } catch (settingsErr) { console.error(settingsErr); }
+
+    await setDoc(doc(db, "users", cred.user.uid), {
+      firstName: first, lastName: last, username, email,
+      points: signupBonus, matchesPlayed: 0, wins: 0,
+      status: "active", role: "player",
+      createdAt: serverTimestamp(), updatedAt: serverTimestamp(),
+    });
+    await setDoc(doc(db, "usernames", usernameKey), { uid: cred.user.uid, email });
+
+    if (signupBonus > 0) {
+      await setDoc(doc(collection(db, "pointTransactions")), {
+        userId: cred.user.uid, type: "signup_bonus", amount: signupBonus,
+        previousBalance: 0, newBalance: signupBonus,
+        description: "Welcome bonus", createdAt: serverTimestamp(),
+      });
+    }
+
+    $("registerForm").reset();
+    toast("Account created.");
+    goToView("home");
+  } catch (e2) {
+    console.error(e2);
+    err.textContent = e2.code === "custom/username-taken" ? "That username is already taken." : friendlyAuthError(e2.code);
+    err.style.display = "block";
+  } finally {
+    btn.disabled = false; btn.textContent = "Create account";
+  }
+});
+
+/* ---- Logout ---- */
+$("logoutBtn").addEventListener("click", () => openModal("logoutConfirmModal"));
+$("confirmLogoutBtn").addEventListener("click", async () => {
+  await signOut(auth);
+  closeModal("logoutConfirmModal");
+  toast("Logged out.");
+  goToView("home");
+});
+
+/* ---- Edit profile ---- */
+$("editProfileBtn").addEventListener("click", () => {
+  if (!userProfile) return;
+  $("ep_first").value = userProfile.firstName || "";
+  $("ep_last").value = userProfile.lastName || "";
+  $("ep_username").value = userProfile.username || "";
+  openModal("editProfileModal");
+});
+$("editProfileForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const user = auth.currentUser;
+  if (!user) return;
+  const first = $("ep_first").value.trim();
+  const last = $("ep_last").value.trim();
+  const username = $("ep_username").value.trim();
+  try {
+    if (username.toLowerCase() !== (userProfile.username || "").toLowerCase()) {
+      const existing = await getDoc(doc(db, "usernames", username.toLowerCase()));
+      if (existing.exists()) { toast("That username is already taken.", "error"); return; }
+      await setDoc(doc(db, "usernames", username.toLowerCase()), { uid: user.uid, email: user.email });
+    }
+    await updateDoc(doc(db, "users", user.uid), { firstName: first, lastName: last, username, updatedAt: serverTimestamp() });
+    await updateProfile(user, { displayName: `${first} ${last}`.trim() });
+    userProfile = { ...userProfile, firstName: first, lastName: last, username };
+    closeModal("editProfileModal");
+    toast("Profile updated.");
+    loadProfile();
+  } catch (err) {
+    console.error(err);
+    toast("Couldn't update profile.", "error");
+  }
+});
+
+/* ---- Change password ---- */
+$("changePasswordBtn").addEventListener("click", () => {
+  $("changePasswordForm").reset();
+  $("cpError").style.display = "none";
+  openModal("changePasswordModal");
+});
+$("changePasswordForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const err = $("cpError");
+  err.style.display = "none";
+  const cur = $("cp_current").value;
+  const next = $("cp_new").value;
+  const confirm = $("cp_confirm").value;
+  if (next !== confirm) { err.textContent = "New passwords don't match."; err.style.display = "block"; return; }
+  const user = auth.currentUser;
+  try {
+    const credential = EmailAuthProvider.credential(user.email, cur);
+    await reauthenticateWithCredential(user, credential);
+    await updatePassword(user, next);
+    closeModal("changePasswordModal");
+    toast("Password updated.");
+  } catch (e2) {
+    console.error(e2);
+    err.textContent = friendlyAuthError(e2.code);
+    err.style.display = "block";
+  }
+});
+
+/* ============================================================
+   HOME — categories + banner + upcoming matches
+   ============================================================ */
+const CATEGORY_ABBR = (name) => name.split(" ").map((w) => w[0]).join("").slice(0, 3).toUpperCase();
+
+let categoriesCache = [];
+
+async function loadCategories() {
+  const grid = $("categoryGrid");
+  try {
+    const snap = await getDocs(query(collection(db, "categories"), where("active", "==", true)));
+    if (snap.empty) { grid.innerHTML = emptyState("No categories yet", "Admins can add tournament categories from the admin panel."); return; }
+    categoriesCache = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+    grid.innerHTML = categoriesCache.map((c) => `
+      <a href="#" class="category-card" data-open-category="${c.id}">
+        <div class="thumb">${CATEGORY_ABBR(c.name || "?")}</div>
+        <div class="name">${escapeHtml(c.name)}</div>
+      </a>`).join("");
+    grid.querySelectorAll("[data-open-category]").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        pendingCategoryFilter = el.dataset.openCategory;
+        if (!auth.currentUser) { toast("Please log in first.", "error"); goToView("login"); return; }
+        goToView("matches");
+      });
+    });
+    renderCategoryChips();
+  } catch (err) {
+    console.error(err);
+    grid.innerHTML = errorState();
+  }
+}
+
+async function loadHomeMatches() {
+  const el = $("homeMatchList");
+  try {
+    const snap = await getDocs(query(collection(db, "matches"), where("status", "==", "Upcoming")));
+    await loadJoinedMatchIds();
+    const homeMatches = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (toMillis(a.startAt) || 0) - (toMillis(b.startAt) || 0))
+      .slice(0, 3);
+    homeMatches.forEach((m) => {
+      const idx = allMatchesCache.findIndex((x) => x.id === m.id);
+      if (idx !== -1) allMatchesCache[idx] = m; else allMatchesCache.push(m);
+    });
+    if (snap.empty) { el.innerHTML = emptyState("No upcoming matches", "New tournaments are added regularly."); return; }
+    el.innerHTML = homeMatches.map(matchCardHtml).join("");
+    wireMatchCardActions(el);
+    startCountdowns();
+    startRoomCodePolling();
+  } catch (err) {
+    console.error(err);
+    el.innerHTML = errorState();
+  }
+}
+
+/* Banner carousel — real data from Firestore `banners` collection */
+async function loadBanners() {
+  const track = $("bannerTrack");
+  const dotsWrap = $("bannerDots");
+  const section = $("bannerSection");
+  try {
+    const snap = await getDocs(query(collection(db, "banners"), where("active", "==", true)));
+    if (snap.empty) { section.classList.add("hidden"); dotsWrap.classList.add("hidden"); return; }
+    section.classList.remove("hidden"); dotsWrap.classList.remove("hidden");
+    const banners = snap.docs.map((d) => d.data()).sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+    track.innerHTML = banners.map((b) => `
+      <div class="carousel-slide" style="${b.imageUrl ? `background-image:linear-gradient(0deg, rgba(28,27,46,0.55), rgba(28,27,46,0.1)), url('${escapeHtml(b.imageUrl)}'); background-size:cover; background-position:center;` : ""}">
+        ${escapeHtml(b.title || "")}
+      </div>`).join("");
+    dotsWrap.innerHTML = banners.map((_, i) => `<span class="${i === 0 ? "active" : ""}"></span>`).join("");
+    track.addEventListener("scroll", () => {
+      const idx = Math.round(track.scrollLeft / track.clientWidth);
+      dotsWrap.querySelectorAll("span").forEach((s, i) => s.classList.toggle("active", i === idx));
+    });
+  } catch (err) {
+    console.error(err);
+    section.classList.add("hidden");
+    dotsWrap.classList.add("hidden");
+  }
+}
+
+/* ============================================================
+   MATCHES VIEW
+   ============================================================ */
+let matchesLoaded = false;
+let activeCategory = "";
+let pendingCategoryFilter = null;
+let matchSearchTerm = "";
+let allMatchesCache = [];
+let joinedMatchIds = new Set();
+let countdownTimer = null;
+
+function renderCategoryChips() {
+  const row = $("categoryChipRow");
+  row.innerHTML = `<button class="chip ${activeCategory === "" ? "active" : ""}" data-cat="">All</button>` +
+    categoriesCache.map((c) => `<button class="chip ${activeCategory === c.id ? "active" : ""}" data-cat="${c.id}">${escapeHtml(c.name)}</button>`).join("");
+  row.querySelectorAll(".chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      activeCategory = chip.dataset.cat;
+      renderCategoryChips();
+      renderMatchesList();
+    });
+  });
+}
+
+async function loadJoinedMatchIds() {
+  if (!auth.currentUser) { joinedMatchIds = new Set(); return; }
+  try {
+    const pSnap = await getDocs(query(collection(db, "matchParticipants"), where("userId", "==", auth.currentUser.uid)));
+    joinedMatchIds = new Set(pSnap.docs.map((d) => d.data().matchId));
+  } catch (err) { console.error(err); }
+}
+
+async function loadMatches() {
+  matchesLoaded = true;
+  if (pendingCategoryFilter) { activeCategory = pendingCategoryFilter; pendingCategoryFilter = null; }
+  if (!categoriesCache.length) await loadCategories();
+  renderCategoryChips();
+  const el = $("matchesList");
+  el.innerHTML = `<div class="skeleton skeleton-card"></div><div class="skeleton skeleton-card"></div>`;
+  try {
+    const snap = await getDocs(query(collection(db, "matches"), where("status", "in", ["Upcoming", "Live"])));
+    allMatchesCache = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (toMillis(a.startAt) || 0) - (toMillis(b.startAt) || 0))
+      .slice(0, 50);
+    await loadJoinedMatchIds();
+    renderMatchesList();
+  } catch (err) {
+    console.error(err);
+    el.innerHTML = errorState();
+  }
+}
+
+function renderMatchesList() {
+  const el = $("matchesList");
+  let list = allMatchesCache;
+  if (activeCategory) list = list.filter((m) => m.categoryId === activeCategory);
+  if (matchSearchTerm) {
+    const t = matchSearchTerm.toLowerCase();
+    list = list.filter((m) => (m.title || "").toLowerCase().includes(t) || (m.matchId || "").toLowerCase().includes(t));
+  }
+  $("matchCountLabel").textContent = `${list.length} match${list.length === 1 ? "" : "es"} available`;
+  if (!list.length) { el.innerHTML = emptyState("No matches found", "Try a different category or search term."); return; }
+  el.innerHTML = list.map(matchCardHtml).join("");
+  wireMatchCardActions(el);
+  startCountdowns();
+  startRoomCodePolling();
+}
+
+$("matchSearchInput").addEventListener("input", (e) => { matchSearchTerm = e.target.value.trim(); renderMatchesList(); });
+$("refreshMatchesBtn").addEventListener("click", () => loadMatches());
+
+/* ---- Match card ---- */
+function matchCardHtml(m) {
+  const filled = m.maxPlayers ? Math.min(100, Math.round(((m.joinedPlayers || 0) / m.maxPlayers) * 100)) : 0;
+  const joined = joinedMatchIds.has(m.id);
+  return `
+  <div class="match-card" data-match-id="${m.id}">
+    <div class="banner">
+      <span class="badge ${badgeClass(m.status)} status-badge">${m.status}</span>
+      <span class="match-id">#${escapeHtml(m.matchId || m.id.slice(0, 6))}</span>
+    </div>
+    <div class="body">
+      <h4>${escapeHtml(m.title || "Untitled match")}</h4>
+      <div class="match-meta">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="6"/><path d="M6 12h4M8 10v4M15 13h.01M18 11h.01"/></svg>
+        <span>${escapeHtml(m.mode || "")}</span><span class="sep">·</span>
+        <span>${escapeHtml(m.platform || "Mobile")}</span><span class="sep">·</span>
+        <span>${escapeHtml(m.map || "")}</span>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="val">${m.entryPoints ?? 0} pts</div><div class="lbl">Entry</div></div>
+        <div class="stat-box"><div class="val">${m.prizePoints ?? 0} pts</div><div class="lbl">Prize Pool</div></div>
+        <div class="stat-box"><div class="val">${m.joinedPlayers ?? 0}/${m.maxPlayers ?? 0}</div><div class="lbl">Players</div></div>
+        ${m.perKillPoints ? `<div class="stat-box"><div class="val">${m.perKillPoints} pts</div><div class="lbl">Per Kill</div></div>` : ""}
+      </div>
+      <div class="capacity-bar"><div class="fill" style="width:${filled}%"></div></div>
+      <div class="capacity-label">${filled}% full</div>
+      <div class="countdown-row" data-countdown="${toMillis(m.startAt)}">
+        <span class="date-part"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>${fmtDate(m.startAt)}</span>
+        <span class="time-part"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg><span class="val">--</span></span>
+      </div>
+      <div class="match-actions">
+        <button class="btn btn-outline" data-open-prize='${JSON.stringify(m.prizeDistribution || []).replace(/'/g, "&#39;")}'>Prizes</button>
+        <span class="action-slot" data-action-slot="${m.id}">${matchActionHtml(m, joined)}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function matchActionHtml(m, joined) {
+  if (!joined) {
+    return `<button class="btn btn-primary" data-join-match="${m.id}">Join Now</button>`;
+  }
+  const sentAt = toMillis(m.roomCodeSentAt);
+  const durationMs = (m.roomCodeDurationMinutes || 0) * 60000;
+  const expiresAt = sentAt ? sentAt + durationMs : 0;
+  if (m.roomCode && sentAt && expiresAt > Date.now()) {
+    return `<div class="room-code-box" data-room-expiry="${expiresAt}">
+      <div class="room-row"><span class="lbl">Room Code</span><span class="val">${escapeHtml(m.roomCode)}</span></div>
+      <div class="room-timer"><span class="timer-val">--:--</span></div>
+    </div>`;
+  }
+  return `<button class="btn btn-outline" disabled>Joined ✓</button>`;
+}
+
+function refreshMatchAction(matchId) {
+  const slot = document.querySelector(`[data-action-slot="${matchId}"]`);
+  if (!slot) return;
+  const m = allMatchesCache.find((x) => x.id === matchId);
+  if (!m) return;
+  slot.innerHTML = matchActionHtml(m, joinedMatchIds.has(matchId));
+  const btn = slot.querySelector("[data-join-match]");
+  if (btn) {
+    btn.addEventListener("click", () => {
+      if (!auth.currentUser) { toast("Please log in first.", "error"); goToView("login"); return; }
+      pendingJoinMatchId = matchId;
+      $("joinModalText").textContent = `Join "${m.title || "this match"}" for ${m.entryPoints ?? 0} points entry?`;
+      openModal("joinModal");
+    });
+  }
+}
+
+function toMillis(ts) {
+  if (!ts) return 0;
+  return ts.toDate ? ts.toDate().getTime() : new Date(ts).getTime();
+}
+
+function startCountdowns() {
+  if (countdownTimer) clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    document.querySelectorAll("[data-countdown]").forEach((el) => {
+      const target = Number(el.dataset.countdown);
+      if (!target) { el.querySelector(".val").textContent = "TBA"; return; }
+      const diff = target - Date.now();
+      const valEl = el.querySelector(".val");
+      if (diff <= 0) {
+        valEl.textContent = "Started";
+        if (!el.dataset.expiredHandled) {
+          el.dataset.expiredHandled = "1";
+          const card = el.closest(".match-card");
+          if (card) refreshMatchAction(card.dataset.matchId);
+        }
+        return;
+      }
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      valEl.textContent = `${h}h ${m}m ${s}s`;
+    });
+    document.querySelectorAll("[data-room-expiry]").forEach((box) => {
+      const expiry = Number(box.dataset.roomExpiry);
+      const diff = expiry - Date.now();
+      const timerEl = box.querySelector(".timer-val");
+      if (diff <= 0) {
+        const card = box.closest(".match-card");
+        if (card) refreshMatchAction(card.dataset.matchId);
+        return;
+      }
+      const m = Math.floor(diff / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      if (timerEl) timerEl.textContent = `Expires in ${m}:${String(s).padStart(2, "0")}`;
+    });
+  }, 1000);
+}
+
+let roomCodePollTimer = null;
+function startRoomCodePolling() {
+  if (roomCodePollTimer) clearInterval(roomCodePollTimer);
+  roomCodePollTimer = setInterval(async () => {
+    if (!auth.currentUser || !allMatchesCache.length) return;
+    if (!["home", "matches"].includes(currentView)) return;
+    try {
+      const ids = allMatchesCache.filter((m) => joinedMatchIds.has(m.id)).map((m) => m.id);
+      for (const id of ids) {
+        const snap = await getDoc(doc(db, "matches", id));
+        if (!snap.exists()) continue;
+        const fresh = { id, ...snap.data() };
+        const idx = allMatchesCache.findIndex((x) => x.id === id);
+        if (idx !== -1) allMatchesCache[idx] = fresh;
+        refreshMatchAction(id);
+      }
+    } catch (err) { console.error(err); }
+  }, 8000);
+}
+
+function wireMatchCardActions(scopeEl) {
+  scopeEl.querySelectorAll("[data-open-prize]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      let prizes = [];
+      try { prizes = JSON.parse(btn.dataset.openPrize); } catch { prizes = []; }
+      $("prizeContent").innerHTML = prizes.length
+        ? prizes.map((p) => `<div class="prize-row"><span class="place">${escapeHtml(p.position)}</span><span class="pts">${p.points} pts</span></div>`).join("")
+        : `<p class="text-muted">Prize distribution hasn't been set for this match yet.</p>`;
+      openModal("prizeModal");
+    });
+  });
+  scopeEl.querySelectorAll("[data-join-match]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!auth.currentUser) { toast("Please log in first.", "error"); goToView("login"); return; }
+      pendingJoinMatchId = btn.dataset.joinMatch;
+      const m = allMatchesCache.find((x) => x.id === pendingJoinMatchId) || {};
+      $("joinModalText").textContent = `Join "${m.title || "this match"}" for ${m.entryPoints ?? 0} points entry?`;
+      openModal("joinModal");
+    });
+  });
+}
+
+let pendingJoinMatchId = null;
+
+$("confirmJoinBtn").addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user || !pendingJoinMatchId) return;
+  const matchId = pendingJoinMatchId;
+  const btn = $("confirmJoinBtn");
+  btn.disabled = true; btn.textContent = "Joining…";
+  try {
+    await runTransaction(db, async (tx) => {
+      const matchRef = doc(db, "matches", matchId);
+      const userRef = doc(db, "users", user.uid);
+      const participantRef = doc(db, "matchParticipants", `${matchId}_${user.uid}`);
+
+      const [matchSnap, userSnap, participantSnap] = await Promise.all([
+        tx.get(matchRef), tx.get(userRef), tx.get(participantRef),
+      ]);
+
+      if (!matchSnap.exists()) throw new Error("Match no longer exists.");
+      const match = matchSnap.data();
+      if (match.status !== "Upcoming") throw new Error("This match is no longer open for joining.");
+      if ((match.joinedPlayers || 0) >= match.maxPlayers) throw new Error("This match is full.");
+      if (participantSnap.exists()) throw new Error("You've already joined this match.");
+      if (toMillis(match.startAt) && toMillis(match.startAt) <= Date.now()) throw new Error("This match has already started.");
+
+      const userData = userSnap.data();
+      const entry = match.entryPoints || 0;
+      if ((userData.points || 0) < entry) throw new Error("You don't have enough points for this match.");
+
+      const newBalance = (userData.points || 0) - entry;
+      tx.update(matchRef, { joinedPlayers: increment(1) });
+      tx.update(userRef, { points: newBalance, matchesPlayed: increment(1), updatedAt: serverTimestamp() });
+      tx.set(participantRef, { matchId, userId: user.uid, joinedAt: serverTimestamp(), status: "joined" });
+      if (entry > 0) {
+        const txRef = doc(collection(db, "pointTransactions"));
+        tx.set(txRef, {
+          userId: user.uid, type: "entry", amount: -entry,
+          previousBalance: userData.points || 0, newBalance,
+          description: `Entry: ${match.title || matchId}`, createdAt: serverTimestamp(),
+        });
+      }
+    });
+    closeModal("joinModal");
+    toast("Joined the match!");
+    loadMatches();
+  } catch (err) {
+    console.error(err);
+    toast(err.message || "Couldn't join match.", "error");
+  } finally {
+    btn.disabled = false; btn.textContent = "Join Now";
+  }
+});
+
+/* ============================================================
+   RESULTS VIEW
+   ============================================================ */
+let resultsTab = "mine";
+let resultsSearch = "";
+
+$("tabMyMatches").addEventListener("click", () => { resultsTab = "mine"; $("tabMyMatches").classList.add("active"); $("tabAllMatches").classList.remove("active"); loadResults(); });
+$("tabAllMatches").addEventListener("click", () => { resultsTab = "all"; $("tabAllMatches").classList.add("active"); $("tabMyMatches").classList.remove("active"); loadResults(); });
+$("resultSearchInput").addEventListener("input", (e) => { resultsSearch = e.target.value.trim().toLowerCase(); renderResultsList(cachedResults); });
+$("refreshResultsBtn").addEventListener("click", () => loadResults());
+
+let cachedResults = [];
+
+async function loadResults() {
+  const el = $("resultsList");
+  el.innerHTML = `<div class="skeleton skeleton-card" style="height:70px;"></div>`;
+  try {
+    let q;
+    if (resultsTab === "mine") {
+      if (!auth.currentUser) { el.innerHTML = emptyState("Log in to see your matches", "Your match history will appear here."); return; }
+      q = query(collection(db, "results"), where("userId", "==", auth.currentUser.uid), where("published", "==", true));
+    } else {
+      q = query(collection(db, "results"), where("published", "==", true));
+    }
+    const snap = await getDocs(q);
+    cachedResults = snap.docs.map((d) => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (toMillis(b.createdAt) || 0) - (toMillis(a.createdAt) || 0))
+      .slice(0, 30);
+    renderResultsList(cachedResults);
+  } catch (err) {
+    console.error(err);
+    el.innerHTML = errorState();
+  }
+}
+
+function renderResultsList(results) {
+  const el = $("resultsList");
+  let list = results;
+  if (resultsSearch) list = list.filter((r) => (r.matchTitle || "").toLowerCase().includes(resultsSearch) || (r.matchId || "").toLowerCase().includes(resultsSearch));
+  if (!list.length) { el.innerHTML = emptyState("No results yet", "Completed and published results will show up here."); return; }
+  el.innerHTML = list.map((r) => `
+    <div class="result-card">
+      <div>
+        <div class="title">${escapeHtml(r.matchTitle || r.matchId || "Match")}</div>
+        <div class="meta">#${escapeHtml(r.matchId || "")} · ${fmtDate(r.createdAt)}</div>
+      </div>
+      <div style="text-align:right;">
+        <div class="pos">#${r.position ?? "-"}</div>
+        <div class="meta">${r.points ?? 0} pts</div>
+      </div>
+    </div>`).join("");
+}
+
+/* ============================================================
+   WALLET
+   ============================================================ */
+async function loadWallet() {
+  const user = auth.currentUser;
+  if (!user) return;
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    const pts = snap.exists() ? (snap.data().points || 0) : 0;
+    $("walletBalance").textContent = `${pts} Points`;
+  } catch (err) { console.error(err); }
+
+  const txEl = $("txList");
+  txEl.innerHTML = `<div class="skeleton skeleton-card" style="height:56px;"></div>`;
+  try {
+    const snap = await getDocs(query(collection(db, "pointTransactions"), where("userId", "==", user.uid)));
+    if (snap.empty) { txEl.innerHTML = emptyState("No transactions yet", "Your point history will show up here."); return; }
+    const txDocs = snap.docs.map((d) => d.data()).sort((a, b) => (toMillis(b.createdAt) || 0) - (toMillis(a.createdAt) || 0)).slice(0, 30);
+    txEl.innerHTML = txDocs.map((t) => {
+      const positive = (t.amount || 0) >= 0;
+      return `<div class="tx-row">
+        <div><div class="desc">${escapeHtml(t.description || t.type || "Transaction")}</div><div class="meta">${fmtDate(t.createdAt)}</div></div>
+        <div class="amt ${positive ? "pos" : "neg"}">${positive ? "+" : ""}${t.amount ?? 0}</div>
+      </div>`;
+    }).join("");
+  } catch (err) {
+    console.error(err);
+    txEl.innerHTML = errorState();
+  }
+}
+
+/* ---- Share app ---- */
+$("shareAppBtn").addEventListener("click", async () => {
+  const shareData = { title: "BattleZone BD", text: "Join me on BattleZone BD for Free Fire tournaments!", url: window.location.href };
+  try {
+    if (navigator.share) { await navigator.share(shareData); }
+    else { await navigator.clipboard.writeText(shareData.url); toast("Link copied to clipboard."); }
+  } catch (err) {
+    console.error(err);
+  }
+});
+
+/* ---- Deposit request ---- */
+$("depositPointsBtn").addEventListener("click", async () => {
+  $("depositForm").reset();
+  try {
+    const snap = await getDoc(doc(db, "settings", "general"));
+    const instructions = snap.exists() ? (snap.data().depositInstructions || "") : "";
+    $("depositInstructions").textContent = instructions || "Send payment to the number shown by admin, then fill in the details below.";
+  } catch (err) { console.error(err); }
+  openModal("depositModal");
+});
+$("depositForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const user = auth.currentUser;
+  if (!user) return;
+  const btn = e.target.querySelector("button[type=submit]");
+  const amount = Number($("dp_amount").value);
+  const method = $("dp_method").value;
+  const sender = $("dp_sender").value.trim();
+  const txId = $("dp_txid").value.trim();
+  const note = $("dp_note").value.trim();
+  btn.disabled = true; btn.textContent = "Submitting…";
+  try {
+    await addDoc(collection(db, "depositRequests"), {
+      userId: user.uid, points: amount, method, sender, txId, note,
+      status: "Pending", createdAt: serverTimestamp(),
+    });
+    closeModal("depositModal");
+    toast("Deposit request submitted. Points will be added once verified.");
+  } catch (err) {
+    console.error(err);
+    toast(err.message || "Couldn't submit request.", "error");
+  } finally {
+    btn.disabled = false; btn.textContent = "Submit request";
+  }
+});
+
+/* ---- Redeem request ---- */
+$("redeemPointsBtn").addEventListener("click", () => { $("redeemForm").reset(); openModal("redeemModal"); });
+$("redeemForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const user = auth.currentUser;
+  if (!user) return;
+  const amount = Number($("rd_amount").value);
+  const method = $("rd_method").value;
+  const account = $("rd_account").value.trim();
+  const note = $("rd_note").value.trim();
+  try {
+    await runTransaction(db, async (tx) => {
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await tx.get(userRef);
+      const prev = userSnap.data().points || 0;
+      if (prev < amount) throw new Error("You don't have enough points for this request.");
+      const next = prev - amount;
+      tx.update(userRef, { points: next, updatedAt: serverTimestamp() });
+      const reqRef = doc(collection(db, "redemptionRequests"));
+      tx.set(reqRef, {
+        userId: user.uid, points: amount, method, account, note, status: "Pending",
+        createdAt: serverTimestamp(),
+      });
+      const txRef = doc(collection(db, "pointTransactions"));
+      tx.set(txRef, {
+        userId: user.uid, type: "redemption_request", amount: -amount,
+        previousBalance: prev, newBalance: next,
+        description: `Withdrawal request via ${method}`, createdAt: serverTimestamp(),
+      });
+    });
+    closeModal("redeemModal");
+    toast("Withdrawal request submitted.");
+    loadWallet();
+  } catch (err) {
+    console.error(err);
+    toast(err.message || "Couldn't submit request.", "error");
+  }
+});
+
+/* ============================================================
+   PROFILE
+   ============================================================ */
+async function loadProfile() {
+  const user = auth.currentUser;
+  if (!user) return;
+  try {
+    const snap = await getDoc(doc(db, "users", user.uid));
+    const p = snap.exists() ? snap.data() : {};
+    userProfile = p;
+    const fullName = `${p.firstName || ""} ${p.lastName || ""}`.trim() || "Player";
+    $("profileAvatar").textContent = fullName.charAt(0).toUpperCase();
+    $("profileName").textContent = fullName;
+    $("profileUsername").textContent = `@${p.username || "player"}`;
+    $("profileEmail").textContent = p.email || user.email || "";
+    $("statMatches").textContent = p.matchesPlayed ?? 0;
+    $("statWins").textContent = p.wins ?? 0;
+    $("statPoints").textContent = p.points ?? 0;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+attachNavHandlers();
+loadBanners();
+loadCategories();
+loadHomeMatches();
+goToView("home");
+
+</script>
+</body>
+</html>
